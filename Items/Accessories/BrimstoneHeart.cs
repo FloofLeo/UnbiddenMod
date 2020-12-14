@@ -20,7 +20,7 @@ namespace UnbiddenMod.Items.Accessories
         public override void UpdateEquip(Player player)
         {
             player.GetModPlayer<UnbiddenPlayer>().brimHeart = true;
-            player.GetModPlayer<UnbiddenPlayer>().resists[0] += 15;
+            player.GetModPlayer<UnbiddenPlayer>().elemAffinity[0] += 1;
         }
         public override void AddRecipes()
         {

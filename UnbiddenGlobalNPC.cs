@@ -9,8 +9,9 @@ namespace UnbiddenMod
     // Elemental variables for NPC's
 
     public int contactDamageEl = -1; // Contact damage element, -1 by default for typeless
-    public float[] resists = new float[8] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }; // Fire, Ice, Lightning, Water, Earth, Air, Holy, Unholy
-
+    // public float[] resists = new float[8] { 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f }; // Fire, Ice, Lightning, Water, Earth, Air, Holy, Unholy
+    public int[] elemMult = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+    public int[] elemAffinity = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0};
     // Elemental variables also contained within GlobalItem, GlobalProjectile, and Player
     public override bool InstancePerEntity => true;
     public override bool CloneNewInstances => true;
@@ -48,7 +49,7 @@ namespace UnbiddenMod
     {
       return Main.rand.Next(100) <= itemCritCh;
     }
-    public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
+    /*public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
     {
       if (hypodermia)
       {
@@ -61,9 +62,9 @@ namespace UnbiddenMod
         npc.StrikeNPC(0, npc.defense, -player.direction, false);
       }
       
-    }
+    }*/
 
-    public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+    /*public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
     {
       if (hypodermia)
       {
@@ -75,10 +76,10 @@ namespace UnbiddenMod
       {
         npc.StrikeNPC(0, knockback, -projectile.direction, crit);
       }
-    }
+    }*/
     public override void SetDefaults(NPC npc)
     {
-      switch (npc.type)
+      /* switch (npc.type)
       {
         // Underworld Enemies
         case NPCID.FireImp:
@@ -1784,6 +1785,7 @@ namespace UnbiddenMod
           npc.buffImmune[mod.BuffType("Frozen")] = true;
           break;
       }
+      */
     }
   }
 }

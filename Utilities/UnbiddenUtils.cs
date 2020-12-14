@@ -15,6 +15,7 @@ using UnbiddenMod;
 using UnbiddenMod.Buffs;
 using UnbiddenMod.Dusts;
 using UnbiddenMod.Items.Weapons;
+using UnbiddenMod.NPCs;
 
 namespace UnbiddenMod
 {
@@ -39,11 +40,17 @@ namespace UnbiddenMod
     // References the UnbiddenGlobalProjectile instance. Shorthand for ease of use.
     // UnbiddenGlobalProjectile unbiddenProjectile = projectile.Unbidden();
     public static UnbiddenGlobalProjectile Unbidden(this Projectile proj) => (UnbiddenGlobalProjectile)proj.GetGlobalProjectile<UnbiddenGlobalProjectile>();
+    public static float[,] elemAffDef = new float[3, 15] 
+    {
+      {     1,      2,      3,      4,      5,      6,      7,      8,      9,     10,     11,     12,     13,     14,     15},
+      {     1,      2,      3,      5,      7,      9,     12,     15,     18,     22,     26,     30,     35,     45,     50},
+      {1.010f, 1.022f, 1.037f, 1.056f, 1.080f, 1.110f, 5.000f, 1.192f, 1.246f, 1.310f, 1.397f, 1.497f, 1.611f, 1.740f, 1.885f}
+    };
     // 
     // Summary:
     // Calculates elemental item damage based on UnbiddenGlobalNPC resists.
     // UnbiddenUtils.CalcEleDamage(Item item, NPC npc, ref int damage);
-    public static int CalcEleDamage(this Item item, NPC npc, ref int damage)
+    /*public static int CalcEleDamage(this Item item, NPC npc, ref int damage)
     {
       int weapEl = item.Unbidden().element; // Determine the element (will always be between 0-6 for array purposes)
       if (weapEl != -1) // if not typeless (and implicitly within 0-6)
@@ -61,12 +68,12 @@ namespace UnbiddenMod
         }
       }
       return damage;
-    }
+    }*/
     // 
     // Summary:
     // Calculates elemental projectile damage based on UnbiddenGlobalNPC resists.
     // UnbiddenUtils.CalcEleDamage(Projectile projectile, NPC npc, ref int damage);
-    public static int CalcEleDamage(this Projectile projectile, NPC npc, ref int damage)
+    /*public static int CalcEleDamage(this Projectile projectile, NPC npc, ref int damage)
     {
       int projEl = projectile.Unbidden().element; // Determine the element (will always be between 0-6 for array purposes)
       if (projEl != -1) // if not typeless (and implicitly within 0-6)
@@ -84,26 +91,65 @@ namespace UnbiddenMod
         }
       }
       return damage;
-    }
+    }*/
     // 
     // Summary:
     // Calculates elemental damage based on UnbiddenPlayer resists.
     // UnbiddenUtils.CalcEleDamageFromNPC(Player player, NPC npc, ref int damage);
-    public static int CalcEleDamageFromNPC(this Player player, NPC npc, ref int damage)
+    public static int CalcElemDamageProjNPC(this Player player, Projectile proj, ref int damage)
     {
-      int npcEl = npc.Unbidden().contactDamageEl;
-      if (npcEl != -1)
+      NPC npc = Main.npc[proj.owner];
+      UnbiddenGlobalNPC modNPC = npc.Unbidden();
+      int projEl = proj.Unbidden().element, // Determine the element (will always be between 0-6 for array purposes)
+          strongEl,
+          weakEl,
+          strongElAff,
+          weakElAff,
+          averageElAff,
+          npcElAff,
+          elemAffMult;
+      float mult;
+      if (projEl != -1) // if not typeless (and implicitly within 0-6)
       {
-        int resistMod = player.Unbidden().resists[npcEl];
-        damage -= (int)(Main.expertMode ? resistMod * 0.75 : resistMod * 0.5);
+        // I propose that we rearrange the elements in the elemental array to go in order
+        // So that this works
+        // Fire > Ice > Air > Earth > Lightning > Water
+        if (projEl == 0)
+        {
+          strongEl = 7;
+          weakEl = 1;
+        }
+        else if (projEl == 7)
+        {
+          strongEl = 6;
+          weakEl = 0;
+        }
+        else
+        {  
+          strongEl = projEl - 1;
+          weakEl = projEl + 1;
+        }
+        strongElAff = player.Unbidden().elemAffinity[strongEl];
+        weakElAff = player.Unbidden().elemAffinity[weakEl];
+        averageElAff = (strongElAff + weakElAff) / 2;
+        npcElAff = modNPC.elemAffinity[projEl];
+        if (npcElAff > averageElAff)
+          {elemAffMult = npcElAff - averageElAff;}
+        else if (npcElAff > averageElAff)
+          {elemAffMult = averageElAff - npcElAff;}
+        else
+          {elemAffMult = 1;}
+        mult = UnbiddenUtils.elemAffDef[elemAffMult - 1, 2];
+        damage -= (int)(Main.expertMode ? ((player.statDefense + player.Unbidden().elemDefense[projEl]) * 0.75) * mult : ((player.statDefense + player.Unbidden().elemDefense[projEl]) * 0.5) * mult); // set the damage to the int version of the new float, implicitly rounding down to the lower int
       }
-      return damage;
+    return damage;
     }
+
     // 
     // Summary:
     // Calculates elemental projectile damage based on UnbiddenPlayer resists.
     // UnbiddenUtils.CalcEleDamageFromProj(Player player, Projectile proj, ref int damage);
-    public static int CalcEleDamageFromProj(this Player player, Projectile proj, ref int damage)
+    /*public static int CalcEleDamageFromProj(this Player player, Projectile proj, ref int damage)
     {
       int projEl = proj.Unbidden().element; // Determine the element (will always be between 0-6 for array purposes)
       if (projEl != -1) // if not typeless (and implicitly within 0-6)
@@ -112,7 +158,7 @@ namespace UnbiddenMod
         damage -= (int)(Main.expertMode ? resistMod * 0.75 : resistMod * 0.5); // set the damage to the int version of the new float, implicitly rounding down to the lower int
       }
       return damage;
-    }
+    }*/
     // 
     // Summary:
     // Allows players to parry. Call this when executing a swing.

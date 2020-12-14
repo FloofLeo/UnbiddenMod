@@ -20,8 +20,9 @@ namespace UnbiddenMod
 
     // Elemental variables for Player
 
-    public string[] elements = new string[8] { "fire", "ice", "lightning", "water", "earth", "air", "holy", "unholy" };
-    public int[] resists = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+    public string[] elements = new string[8] { "fire", "ice", "lightning", "water", "earth", "air", "radiant", "necrotic" };
+    public int[] elemAffinity = new int[8] { 15, 0, 0, 0, 0, 0, 0, 0};
+    public int[] elemDefense = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0};
 
     // Elemental variables also contained within GlobalItem, GlobalNPC, and GlobalProjectile
     public bool angelTear;
@@ -41,7 +42,7 @@ namespace UnbiddenMod
     public bool bastionsAegis = false;
     public int dashTimeMod;
     public int dashMod;
-    public int dashModDelay = 60;
+    public int dashModDelay = 45;
     public override TagCompound Save()
     {
       return new TagCompound {
@@ -62,7 +63,7 @@ namespace UnbiddenMod
       burnAura = false;
       cFlameAura = false;
       ampCapacitor = false;
-      resists = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+      elemAffinity = new int[8] { 15, 0, 0, 0, 0, 0, 0, 0 };
       dashMod = 0;
       dashTimeMod = 0;
     }
@@ -152,7 +153,7 @@ namespace UnbiddenMod
     {
       if (dashMod == 1)
       {
-        float dashStrength = 12f;
+        float dashStrength = 16f;
         int dashDir = 0;
         int delayTime = 60;
         bool isDashingHorizontal = false;
@@ -288,23 +289,21 @@ namespace UnbiddenMod
     }
 
     // If the Player is hit by an NPC's contact damage...
-    public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
+    /*public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
     {
       damage = player.CalcEleDamageFromNPC(npc, ref damage);
 
 
       focus = 0f;
-    }
-
+    }*/
     public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
     {
-      damage = player.CalcEleDamageFromProj(proj, ref damage);
+      damage = player.CalcElemDamageProjNPC(proj, ref damage);
 
 
 
       focus = 0f;
     }
-
     public override void GetHealLife(Item item, bool quickHeal, ref int healValue)
     {
       if (boosterShot && item.potion)

@@ -81,21 +81,6 @@ namespace UnbiddenMod.Projectiles
         {
             target.AddBuff((BuffID.OnFire), 10);
             UnbiddenPlayer unbiddenPlayer = target.Unbidden();
-            int projEl = projectile.GetGlobalProjectile<UnbiddenGlobalProjectile>().element;
-            if (projEl != -1) // if not typeless (and implicitly within 0-6)
-            {
-                float damageFloat = (float)damage, // And the damage we already have, converted to float
-                resistMod = unbiddenPlayer.resists[projEl];
-                if (resistMod > 0f)
-                {
-                    damageFloat *= resistMod; // Multiply by the relevant resistance, divided by 100 (this is why we needed floats)
-                    damage = (int)damageFloat; // set the damage to the int version of the new float, implicitly rounding down to the lower int
-                }
-                else
-                {
-                    damage = 1;
-                }
-            }
         }
 
         public override Color? GetAlpha(Color lightColor)

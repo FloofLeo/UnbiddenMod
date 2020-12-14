@@ -49,7 +49,8 @@ namespace UnbiddenMod.NPCs.FireAncient
             npc.buffImmune[BuffID.OnFire] = true;
             npc.buffImmune[mod.BuffType("Freezing")] = true;
             npc.buffImmune[mod.BuffType("Frozen")] = true;
-            npc.Unbidden().resists = new float[8] { 0.25f, 1f, 1f, 1.5f, 0.25f, 1.5f, 1f, 1f };
+            // npc.Unbidden().resists = new float[8] { 0.25f, 1f, 1f, 1.5f, 0.25f, 1.5f, 1f, 1f };
+            npc.Unbidden().elemAffinity = new int [8] {15, 1, 1, 1, 15, 1, 1, 1};
             npc.Unbidden().contactDamageEl = 0;
         }
 
